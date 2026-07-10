@@ -124,7 +124,8 @@ tr:hover td{background:#fafbff}
 
 <!-- ADMIN -->
 <div class="admin" id="admin">
-  <div class="sidebar">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar" id="sidebar">
     <div class="sidebar-logo"><h2>SK <span>Phone</span> Gros</h2><p>⚙️ لوحة التحكم</p></div>
     <div class="nav-item active" onclick="showSec('dashboard',this)"><span>📊</span> لوحة المعلومات</div>
     <div class="nav-divider">المنتجات</div>
@@ -143,7 +144,10 @@ tr:hover td{background:#fafbff}
 
   <div class="main">
     <div class="topbar">
-      <div class="topbar-title" id="ttl">📊 لوحة المعلومات</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <div class="topbar-title" id="ttl">📊 لوحة المعلومات</div>
+      </div>
       <span class="sync-badge" id="syncBadge">🔄 جاري...</span>
     </div>
     <div class="content">
@@ -247,6 +251,14 @@ tr:hover td{background:#fafbff}
       </select>
     </div>
     <div class="fg"><label class="fl">رقم واتساب</label><input class="fi" id="p-ph" value="213549438236"></div>
+    <div class="fg">
+      <label class="fl">صورة المنتج</label>
+      <div id="imgPreview" style="width:100%;height:140px;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;overflow:hidden;background:#f8fafc;cursor:pointer" onclick="document.getElementById('p-img').click()">
+        <span id="imgPlaceholder" style="color:var(--muted);font-size:.85rem">📷 اضغط لاختيار صورة</span>
+        <img id="imgEl" style="display:none;width:100%;height:100%;object-fit:cover">
+      </div>
+      <input type="file" id="p-img" accept="image/*" style="display:none" onchange="previewImg(this)">
+    </div>
     <div class="ma">
       <button class="btn btn-o" onclick="closeMo('pMo')">إلغاء</button>
       <button class="btn btn-p" onclick="saveProd()">💾 حفظ</button>
@@ -395,6 +407,7 @@ function openAddProd() {
   ['p-n','p-ic'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('p-pr').value='';
   document.getElementById('p-ph').value='213549438236';
+  resetImgPreview();
   document.getElementById('pMo').classList.add('open');
 }
 
@@ -407,6 +420,11 @@ function openEditProd(id) {
   document.getElementById('p-ic').value=p.icon||'';
   document.getElementById('p-ca').value=p.cat;
   document.getElementById('p-ph').value=p.phone||'213549438236';
+  if(p.image) {
+    document.getElementById('imgEl').src=p.image;
+    document.getElementById('imgEl').style.display='block';
+    document.getElementById('imgPlaceholder').style.display='none';
+  } else { resetImgPreview(); }
   document.getElementById('pMo').classList.add('open');
 }
 
@@ -414,10 +432,12 @@ async function saveProd() {
   const name=document.getElementById('p-n').value.trim();
   const price=parseInt(document.getElementById('p-pr').value);
   if(!name||isNaN(price)){showToast('❌ أدخل الاسم والسعر!','error');return;}
-  const data={name,price,icon:document.getElementById('p-ic').value.trim()||'📦',cat:document.getElementById('p-ca').value,phone:document.getElementById('p-ph').value,watext:encodeURIComponent('أريد طلب: '+name)};
+  const imgEl = document.getElementById('imgEl');
+  const imgData = imgEl.style.display !== 'none' ? imgEl.src : '';
+  const data={name,price,icon:document.getElementById('p-ic').value.trim()||'📦',cat:document.getElementById('p-ca').value,phone:document.getElementById('p-ph').value,watext:encodeURIComponent('أريد طلب: '+name),image:imgData};
   if(editProdId) await db.collection('products').doc(editProdId).set(data,{merge:true});
   else await db.collection('products').add(data);
-  showToast('✅ تم الحفظ!','success'); closeMo('pMo');
+  showToast('✅ تم الحفظ!','success'); closeMo('pMo'); resetImgPreview();
 }
 
 async function delProd(id,name) {
@@ -524,6 +544,32 @@ async function importData(inp) {
     for(let p of data.products) { const{id,...r}=p; if(id) await db.collection('products').doc(id).set(r); else await db.collection('products').add(r); }
     showToast('✅ تم الاستيراد!','success');
   }
+}
+
+// SIDEBAR TOGGLE
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+// IMAGE PREVIEW
+function previewImg(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('imgEl').src = e.target.result;
+    document.getElementById('imgEl').style.display = 'block';
+    document.getElementById('imgPlaceholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetImgPreview() {
+  document.getElementById('imgEl').src = '';
+  document.getElementById('imgEl').style.display = 'none';
+  document.getElementById('imgPlaceholder').style.display = 'block';
+  document.getElementById('p-img').value = '';
 }
 
 // UTILS
