@@ -104,7 +104,17 @@ tr:hover td{background:#fafbff}
 .toast.show{transform:translateY(0)}
 .toast.success{background:var(--green)}
 .toast.error{background:var(--accent)}
-@media(max-width:768px){.sidebar{width:200px}.main{margin-right:200px}.content{padding:14px}}
+.mob-menu-btn{display:none}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:98}
+@media(max-width:768px){
+  .mob-menu-btn{display:flex!important;align-items:center;justify-content:center;background:#e94560;border:none;color:white!important;font-size:1.4rem;cursor:pointer;padding:6px 12px;border-radius:8px;font-weight:700}
+  .sidebar{position:fixed;right:-260px;transition:right .3s;z-index:99;width:240px}
+  .sidebar.open{right:0}
+  .sidebar-overlay.open{display:block}
+  .main{margin-right:0}
+  .content{padding:14px}
+  .topbar{padding:12px 16px}
+}
 @media(max-width:600px){.fr{grid-template-columns:1fr}}
 </style>
 </head>
@@ -127,16 +137,16 @@ tr:hover td{background:#fafbff}
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
   <div class="sidebar" id="sidebar">
     <div class="sidebar-logo"><h2>SK <span>Phone</span> Gros</h2><p>⚙️ لوحة التحكم</p></div>
-    <div class="nav-item active" onclick="showSec('dashboard',this)"><span>📊</span> لوحة المعلومات</div>
+    <div class="nav-item active" onclick="showSec('dashboard',this);if(window.innerWidth<=768)toggleSidebar()"><span>📊</span> لوحة المعلومات</div>
     <div class="nav-divider">المنتجات</div>
-    <div class="nav-item" onclick="showSec('products',this)"><span>📦</span> المنتجات</div>
-    <div class="nav-item" onclick="showSec('categories',this)"><span>🏷️</span> التصنيفات</div>
+    <div class="nav-item" onclick="showSec('products',this);if(window.innerWidth<=768)toggleSidebar()"><span>📦</span> المنتجات</div>
+    <div class="nav-item" onclick="showSec('categories',this);if(window.innerWidth<=768)toggleSidebar()"><span>🏷️</span> التصنيفات</div>
     <div class="nav-divider">المبيعات</div>
-    <div class="nav-item" onclick="showSec('orders',this)"><span>🛒</span> الطلبيات</div>
+    <div class="nav-item" onclick="showSec('orders',this);if(window.innerWidth<=768)toggleSidebar()"><span>🛒</span> الطلبيات</div>
     <div class="nav-divider">الإعدادات</div>
-    <div class="nav-item" onclick="showSec('delivery',this)"><span>🚚</span> أسعار التوصيل</div>
-    <div class="nav-item" onclick="showSec('settings',this)"><span>⚙️</span> إعدادات المتجر</div>
-    <div class="nav-item" onclick="showSec('backup',this)"><span>💾</span> النسخ الاحتياطي</div>
+    <div class="nav-item" onclick="showSec('delivery',this);if(window.innerWidth<=768)toggleSidebar()"><span>🚚</span> أسعار التوصيل</div>
+    <div class="nav-item" onclick="showSec('settings',this);if(window.innerWidth<=768)toggleSidebar()"><span>⚙️</span> إعدادات المتجر</div>
+    <div class="nav-item" onclick="showSec('backup',this);if(window.innerWidth<=768)toggleSidebar()"><span>💾</span> النسخ الاحتياطي</div>
     <div class="nav-bottom">
       <div class="nav-item" onclick="window.location='/'" style="color:rgba(255,255,255,.5)"><span>🏪</span> رجوع للمتجر</div>
     </div>
@@ -145,7 +155,7 @@ tr:hover td{background:#fafbff}
   <div class="main">
     <div class="topbar">
       <div style="display:flex;align-items:center;gap:10px">
-        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <button class="mob-menu-btn" onclick="toggleSidebar()">☰</button>
         <div class="topbar-title" id="ttl">📊 لوحة المعلومات</div>
       </div>
       <span class="sync-badge" id="syncBadge">🔄 جاري...</span>
