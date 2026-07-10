@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم - SK Phone Gros</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#1a1a2e;--accent:#e94560;--green:#22c55e;--orange:#f59e0b;--light:#f8f9ff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0}
+body{font-family:'Cairo',sans-serif;background:var(--light);color:var(--text);direction:rtl;min-height:100vh}
+
+/* LOGIN */
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a1a2e,#0f3460)}
+.login-card{background:white;border-radius:24px;padding:40px 32px;width:90%;max-width:380px;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,.4)}
+.login-card h2{font-size:1.3rem;font-weight:900;color:var(--primary);margin-bottom:6px}
+.login-card h2 span{color:var(--accent)}
+.login-sub{color:var(--muted);font-size:.85rem;margin-bottom:28px}
+.login-input{width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;font-family:'Cairo',sans-serif;font-size:1.1rem;text-align:center;outline:none;letter-spacing:4px;margin-bottom:14px;transition:border-color .2s}
+.login-input:focus{border-color:var(--accent)}
+.login-btn{width:100%;padding:13px;background:var(--primary);color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer}
+.login-btn:hover{background:var(--accent)}
+.login-err{color:var(--accent);font-size:.85rem;margin-top:10px;display:none}
+.back-link{display:block;margin-top:14px;color:var(--muted);font-size:.85rem;text-decoration:none}
+
+/* ADMIN */
+.admin{display:none;min-height:100vh}
+.sidebar{position:fixed;right:0;top:0;bottom:0;width:240px;background:var(--primary);color:white;z-index:100;overflow-y:auto;display:flex;flex-direction:column}
+.sidebar-logo{padding:22px 20px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-logo h2{font-size:1.1rem;font-weight:900}
+.sidebar-logo h2 span{color:var(--accent)}
+.sidebar-logo p{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:13px 20px;cursor:pointer;color:rgba(255,255,255,.7);font-size:.88rem;font-weight:600;transition:all .2s;border-right:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.07);color:white}
+.nav-item.active{background:rgba(233,69,96,.15);color:var(--accent);border-right-color:var(--accent)}
+.nav-divider{padding:10px 20px 4px;font-size:.7rem;color:rgba(255,255,255,.3);letter-spacing:1px}
+.nav-bottom{margin-top:auto;border-top:1px solid rgba(255,255,255,.1)}
+.main{margin-right:240px;min-height:100vh}
+.topbar{background:white;border-bottom:1px solid var(--border);padding:15px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:1.05rem;font-weight:900;color:var(--primary)}
+.sync-badge{background:var(--green);color:white;font-size:.72rem;padding:4px 10px;border-radius:20px;font-weight:700}
+.content{padding:24px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:white;border-radius:14px;padding:18px;border:1px solid var(--border)}
+.stat-icon{font-size:1.6rem;margin-bottom:6px}
+.stat-num{font-size:1.7rem;font-weight:900;color:var(--primary)}
+.stat-label{font-size:.78rem;color:var(--muted)}
+.a-sec{display:none}
+.a-sec.active{display:block}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.sec-hdr h2{font-size:1.15rem;font-weight:900;color:var(--primary)}
+.btn{padding:9px 18px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.btn-p{background:var(--primary);color:white}
+.btn-p:hover{background:var(--accent)}
+.btn-s{background:var(--green);color:white}
+.btn-d{background:#ef4444;color:white}
+.btn-sm{padding:5px 12px;font-size:.8rem}
+.btn-o{background:transparent;border:2px solid var(--border);color:var(--text)}
+.btn-o:hover{border-color:var(--primary);color:var(--primary)}
+.tw{background:white;border-radius:14px;border:1px solid var(--border);overflow:hidden}
+.ttb{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.si{flex:1;min-width:180px;padding:8px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:.88rem;outline:none}
+.si:focus{border-color:var(--accent)}
+.fs{padding:8px 12px;border:2px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:.85rem;background:white;outline:none}
+.sav{color:var(--orange);font-size:.8rem;display:none}
+table{width:100%;border-collapse:collapse}
+th{text-align:right;padding:11px 14px;font-size:.78rem;color:var(--muted);font-weight:700;background:#f8fafc;border-bottom:1px solid var(--border)}
+td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:.86rem;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbff}
+.cb{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.73rem;font-weight:700;background:#e0e7ff;color:#3730a3}
+.ip{width:85px;padding:5px 8px;border:2px solid var(--border);border-radius:8px;font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:700;text-align:center;color:var(--accent);outline:none}
+.ip:focus{border-color:var(--accent)}
+.acts{display:flex;gap:6px}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:20px}
+.mo.open{display:flex}
+.mbox{background:white;border-radius:18px;padding:26px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.mbox h3{font-size:1.05rem;font-weight:900;margin-bottom:18px;color:var(--primary)}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:.83rem;font-weight:700;color:var(--muted);margin-bottom:5px}
+.fi,.fsel{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:.92rem;outline:none;transition:border-color .2s;direction:rtl}
+.fi:focus,.fsel:focus{border-color:var(--accent)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ma{display:flex;gap:10px;margin-top:18px;justify-content:flex-end}
+.oc{background:white;border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:10px}
+.oh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.oid{font-size:.83rem;font-weight:700;color:var(--primary)}
+.os{padding:3px 12px;border-radius:20px;font-size:.76rem;font-weight:700}
+.s-new{background:#fef3c7;color:#92400e}
+.s-confirmed{background:#d1fae5;color:#065f46}
+.s-cancelled{background:#fee2e2;color:#991b1b}
+.of{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.ot{font-size:1.05rem;font-weight:900;color:var(--accent)}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.dc{background:white;border:1px solid var(--border);border-radius:11px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.wn{flex:1;font-size:.86rem;font-weight:700}
+.wp{width:75px;padding:5px 7px;border:2px solid var(--border);border-radius:8px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;text-align:center;color:var(--accent);outline:none}
+.wp:focus{border-color:var(--accent)}
+.sc{background:white;border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px}
+.sc h3{font-size:.95rem;font-weight:900;color:var(--primary);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.bb{display:flex;align-items:center;gap:12px;padding:14px 18px;background:white;border:2px solid var(--border);border-radius:11px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;color:var(--text);width:100%;margin-bottom:10px;transition:all .2s}
+.bb:hover{border-color:var(--primary);color:var(--primary)}
+.toast{position:fixed;bottom:24px;left:24px;background:var(--primary);color:white;padding:11px 18px;border-radius:11px;font-size:.88rem;font-weight:700;z-index:9999;transform:translateY(100px);transition:transform .3s;box-shadow:0 8px 25px rgba(0,0,0,.3)}
+.toast.show{transform:translateY(0)}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--accent)}
+@media(max-width:768px){.sidebar{width:200px}.main{margin-right:200px}.content{padding:14px}}
+@media(max-width:600px){.fr{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h2>SK <span>Phone</span> Gros</h2>
+    <div class="login-sub">🔐 لوحة التحكم الإدارية</div>
+    <input type="password" class="login-input" id="loginInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">دخول</button>
+    <div class="login-err" id="loginErr">❌ كلمة السر غلط!</div>
+    <a href="/" class="back-link">← رجوع للمتجر</a>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin" id="admin">
+  <div class="sidebar">
+    <div class="sidebar-logo"><h2>SK <span>Phone</span> Gros</h2><p>⚙️ لوحة التحكم</p></div>
+    <div class="nav-item active" onclick="showSec('dashboard',this)"><span>📊</span> لوحة المعلومات</div>
+    <div class="nav-divider">المنتجات</div>
+    <div class="nav-item" onclick="showSec('products',this)"><span>📦</span> المنتجات</div>
+    <div class="nav-item" onclick="showSec('categories',this)"><span>🏷️</span> التصنيفات</div>
+    <div class="nav-divider">المبيعات</div>
+    <div class="nav-item" onclick="showSec('orders',this)"><span>🛒</span> الطلبيات</div>
+    <div class="nav-divider">الإعدادات</div>
+    <div class="nav-item" onclick="showSec('delivery',this)"><span>🚚</span> أسعار التوصيل</div>
+    <div class="nav-item" onclick="showSec('settings',this)"><span>⚙️</span> إعدادات المتجر</div>
+    <div class="nav-item" onclick="showSec('backup',this)"><span>💾</span> النسخ الاحتياطي</div>
+    <div class="nav-bottom">
+      <div class="nav-item" onclick="window.location='/'" style="color:rgba(255,255,255,.5)"><span>🏪</span> رجوع للمتجر</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="ttl">📊 لوحة المعلومات</div>
+      <span class="sync-badge" id="syncBadge">🔄 جاري...</span>
+    </div>
+    <div class="content">
+
+      <div class="a-sec active" id="sec-dashboard">
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="tw"><div class="ttb"><b>🔥 آخر الطلبيات</b></div>
+        <div id="recentOrders" style="padding:20px;color:var(--muted);text-align:center">لا توجد طلبيات بعد</div></div>
+      </div>
+
+      <div class="a-sec" id="sec-products">
+        <div class="sec-hdr"><h2>📦 إدارة المنتجات</h2><button class="btn btn-p" onclick="openAddProd()">+ إضافة منتج</button></div>
+        <div class="tw">
+          <div class="ttb">
+            <input type="text" class="si" placeholder="🔍 ابحث..." oninput="renderProds(this.value)">
+            <select class="fs" id="catF" onchange="renderProds()">
+              <option value="all">كل الأصناف</option>
+              <option value="casque">سماعات</option><option value="airpods">إيربودز</option>
+              <option value="cable">كابلات</option><option value="chargeur">شارجور</option>
+              <option value="powerbank">باور بنك</option><option value="baffe">بلوتوث</option>
+              <option value="support">سيبورت</option><option value="batterie">باطري</option>
+              <option value="modem">مودام</option><option value="autre">أخرى</option>
+            </select>
+            <span class="sav" id="savInd">💾 حفظ...</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table><thead><tr><th></th><th>اسم المنتج</th><th>الصنف</th><th>السعر</th><th>إجراءات</th></tr></thead>
+            <tbody id="prodsBody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="a-sec" id="sec-categories">
+        <div class="sec-hdr"><h2>🏷️ التصنيفات</h2><button class="btn btn-p" onclick="addCat()">+ إضافة</button></div>
+        <div class="tw"><table><thead><tr><th>المفتاح</th><th>الاسم</th><th>المنتجات</th><th>إجراءات</th></tr></thead>
+        <tbody id="catsBody"></tbody></table></div>
+      </div>
+
+      <div class="a-sec" id="sec-orders">
+        <div class="sec-hdr"><h2>🛒 الطلبيات</h2><button class="btn btn-p" onclick="openAddOrder()">+ طلب جديد</button></div>
+        <div id="ordersList"></div>
+      </div>
+
+      <div class="a-sec" id="sec-delivery">
+        <div class="sec-hdr"><h2>🚚 أسعار التوصيل</h2><button class="btn btn-s" onclick="saveDelivery()">💾 حفظ</button></div>
+        <div class="dg" id="delGrid"></div>
+      </div>
+
+      <div class="a-sec" id="sec-settings">
+        <h2 style="margin-bottom:18px">⚙️ إعدادات المتجر</h2>
+        <div class="sc"><h3>معلومات المتجر</h3>
+          <div class="fg"><label class="fl">اسم المتجر</label><input class="fi" id="s-name" value="SK Phone Gros"></div>
+          <div class="fr">
+            <div class="fg"><label class="fl">واتساب 1</label><input class="fi" id="s-wa1" value="0549438236"></div>
+            <div class="fg"><label class="fl">واتساب 2</label><input class="fi" id="s-wa2" value="0661698785"></div>
+          </div>
+          <div class="fg"><label class="fl">تيليغرام</label><input class="fi" id="s-tg" placeholder="@username"></div>
+          <button class="btn btn-p" onclick="saveSettings()">💾 حفظ</button>
+        </div>
+        <div class="sc"><h3>🔐 تغيير كلمة السر</h3>
+          <div class="fr">
+            <div class="fg"><label class="fl">كلمة السر الجديدة</label><input type="password" class="fi" id="np"></div>
+            <div class="fg"><label class="fl">تأكيد</label><input type="password" class="fi" id="cp"></div>
+          </div>
+          <button class="btn btn-p" onclick="changePass()">تغيير</button>
+        </div>
+      </div>
+
+      <div class="a-sec" id="sec-backup">
+        <h2 style="margin-bottom:18px">💾 النسخ الاحتياطي</h2>
+        <div class="sc"><h3>تصدير</h3>
+          <button class="bb" onclick="exportAll()"><span style="font-size:1.3rem">📤</span><div><div>تصدير كل البيانات</div></div></button>
+          <button class="bb" onclick="exportProds()"><span style="font-size:1.3rem">📦</span><div><div>تصدير المنتجات فقط</div></div></button>
+        </div>
+        <div class="sc"><h3>استيراد</h3>
+          <button class="bb" onclick="document.getElementById('impF').click()"><span style="font-size:1.3rem">📥</span><div><div>استيراد من JSON</div></div></button>
+          <input type="file" id="impF" accept=".json" style="display:none" onchange="importData(this)">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="mo" id="pMo">
+  <div class="mbox">
+    <h3 id="pMoT">➕ إضافة منتج</h3>
+    <div class="fg"><label class="fl">اسم المنتج</label><input class="fi" id="p-n"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">السعر (دج)</label><input type="number" class="fi" id="p-pr"></div>
+      <div class="fg"><label class="fl">الأيقونة</label><input class="fi" id="p-ic" maxlength="4"></div>
+    </div>
+    <div class="fg"><label class="fl">الصنف</label>
+      <select class="fsel" id="p-ca">
+        <option value="casque">🎧 سماعات</option><option value="airpods">🎵 إيربودز</option>
+        <option value="cable">🔌 كابلات</option><option value="chargeur">⚡ شارجور</option>
+        <option value="powerbank">🔋 باور بنك</option><option value="baffe">🔊 بلوتوث</option>
+        <option value="support">🏍️ سيبورت</option><option value="batterie">🪫 باطري</option>
+        <option value="modem">📡 مودام</option><option value="autre">📦 أخرى</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">رقم واتساب</label><input class="fi" id="p-ph" value="213549438236"></div>
+    <div class="ma">
+      <button class="btn btn-o" onclick="closeMo('pMo')">إلغاء</button>
+      <button class="btn btn-p" onclick="saveProd()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="mo" id="oMo">
+  <div class="mbox">
+    <h3>➕ طلبية جديدة</h3>
+    <div class="fg"><label class="fl">اسم الزبون</label><input class="fi" id="o-n"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">الهاتف</label><input class="fi" id="o-ph"></div>
+      <div class="fg"><label class="fl">الولاية</label><input class="fi" id="o-w"></div>
+    </div>
+    <div class="fg"><label class="fl">المنتجات</label><textarea class="fi" id="o-p" rows="3"></textarea></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">المجموع (دج)</label><input type="number" class="fi" id="o-t"></div>
+      <div class="fg"><label class="fl">الحالة</label>
+        <select class="fsel" id="o-s">
+          <option value="new">🆕 جديد</option><option value="confirmed">✅ مؤكد</option><option value="cancelled">❌ ملغي</option>
+        </select>
+      </div>
+    </div>
+    <div class="ma">
+      <button class="btn btn-o" onclick="closeMo('oMo')">إلغاء</button>
+      <button class="btn btn-p" onclick="saveOrder()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyCPlH0VhpFJp4rOoc61ApwgW7GPCL5RRzE",
+    authDomain: "sk-phone-gros.firebaseapp.com",
+    projectId: "sk-phone-gros",
+    storageBucket: "sk-phone-gros.firebasestorage.app",
+    messagingSenderId: "129525741947",
+    appId: "1:129525741947:web:8485bf75891f64cfa7e5de"
+  });
+  const db = firebase.firestore();
+</script>
+<script>
+const PASS_KEY = 'skp_pass';
+let currentPass = localStorage.getItem(PASS_KEY) || 'fSS4HDC5';
+let products = [], orders = [], delivery = {}, editProdId = null;
+let settings = {storeName:'SK Phone Gros',wa1:'0549438236',wa2:'0661698785',telegram:''};
+const cats = {casque:'سماعات',airpods:'إيربودز',cable:'كابلات',chargeur:'شارجور',powerbank:'باور بنك',baffe:'بلوتوث',support:'سيبورت',batterie:'باطري',modem:'مودام',autre:'أخرى'};
+const wilayas = ["أدرار","الشلف","الأغواط","أم البواقي","باتنة","بجاية","بسكرة","بشار","البليدة","البويرة","تمنراست","تبسة","تلمسان","تيارت","تيزي وزو","الجزائر","الجلفة","جيجل","سطيف","سعيدة","سكيكدة","سيدي بلعباس","عنابة","قالمة","قسنطينة","المدية","مستغانم","المسيلة","معسكر","ورقلة","وهران","البيض","إليزي","برج بوعريريج","بومرداس","الطارف","تندوف","تيسمسيلت","الوادي","خنشلة","سوق أهراس","تيبازة","ميلة","عين الدفلى","النعامة","عين تيموشنت","غرداية","غليزان","تيميمون","برج باجي مختار","أولاد جلال","بني عباس","عين صالح","عين قزام","تقرت","جانت","المغير","المنيعة"];
+const initProds = [{"cat": "casque", "icon": "🎧", "name": "Casque P47 M", "price": 660, "phone": "213549438236", "watext": "أريد%20طلب:%20Casque%20P47%20M"}, {"cat": "casque", "icon": "🎧", "name": "Casque P47", "price": 570, "phone": "213549438236", "watext": "أريد%20طلب:%20Casque%20P47"}, {"cat": "casque", "icon": "🎧", "name": "Casque P9 Qualité 1ère", "price": 830, "phone": "213549438236", "watext": "أريد%20طلب:%20Casque%20P9"}, {"cat": "casque", "icon": "🎧", "name": "Casque P9 Pro Max", "price": 930, "phone": "213549438236", "watext": "أريد%20طلب:%20Casque%20P9%20Pro%20Max"}, {"cat": "casque", "icon": "🎧", "name": "Casque Labubu", "price": 890, "phone": "213549438236", "watext": "أريد%20طلب:%20Casque%20Labubu"}, {"cat": "casque", "icon": "🎧", "name": "Casque Stiche", "price": 940, "phone": "213549438236", "watext": "أريد%20طلب:%20Casque%20Stiche"}, {"cat": "airpods", "icon": "🎵", "name": "AirPods 4 Pro", "price": 820, "phone": "213549438236", "watext": "أريد%20طلب:%20AirPods%204%20Pro"}, {"cat": "airpods", "icon": "🎵", "name": "AirPods 4 Anker - Type C", "price": 670, "phone": "213549438236", "watext": "أريد%20طلب:%20AirPods%204%20Anker"}, {"cat": "airpods", "icon": "🎵", "name": "AirPods Pro 2 Hoco - Type C", "price": 700, "phone": "213549438236", "watext": "أريد%20طلب:%20AirPods%20Pro%202%20Hoco"}, {"cat": "airpods", "icon": "🎵", "name": "AirPods Pro 2 Anker - Type C", "price": 620, "phone": "213549438236", "watext": "أريد%20طلب:%20AirPods%20Pro%202%20Anker"}, {"cat": "airpods", "icon": "🎵", "name": "AirPods Pro 2 USA - Type C", "price": 660, "phone": "213549438236", "watext": "أريد%20طلب:%20AirPods%20Pro%202%20USA"}, {"cat": "airpods", "icon": "🎵", "name": "AirPods Hoco EW76", "price": 1130, "phone": "213549438236", "watext": "أريد%20طلب:%20AirPods%20Hoco%20EW76"}, {"cat": "airpods", "icon": "🎵", "name": "AirPods Hoco EW78", "price": 1110, "phone": "213549438236", "watext": "أريد%20طلب:%20AirPods%20Hoco%20EW78"}, {"cat": "cable", "icon": "🔌", "name": "Câble One Plus Type C", "price": 150, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20One%20Plus%20Type%20C"}, {"cat": "cable", "icon": "🔌", "name": "Câble Oppo DL129 Micro", "price": 130, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Oppo%20DL129"}, {"cat": "cable", "icon": "🔌", "name": "Câble Hoco X59 Type C", "price": 230, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Hoco%20X59%20Type%20C"}, {"cat": "cable", "icon": "🔌", "name": "Câble Hoco X59 Type C / iPhone", "price": 400, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Hoco%20X59%20TypeC-iPhone"}, {"cat": "cable", "icon": "🔌", "name": "Câble Hoco X59 Type C / Type C", "price": 300, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Hoco%20X59%20TypeC-TypeC"}, {"cat": "cable", "icon": "🔌", "name": "Câble Hoco X37 Type C / Type C", "price": 230, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Hoco%20X37%20TypeC-TypeC"}, {"cat": "cable", "icon": "🔌", "name": "Câble Hoco X37 Type C / iPhone", "price": 290, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Hoco%20X37%20TypeC-iPhone"}, {"cat": "cable", "icon": "🔌", "name": "Câble Hoco DU201 Micro", "price": 225, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Hoco%20DU201"}, {"cat": "cable", "icon": "🔌", "name": "Câble Hoco DU202 Type C", "price": 240, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Hoco%20DU202"}, {"cat": "cable", "icon": "🔌", "name": "Câble Hoco DU204 Type C / Type C", "price": 300, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Hoco%20DU204"}, {"cat": "cable", "icon": "🔌", "name": "Câble Hoco DU203 Type C / iPhone", "price": 330, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Hoco%20DU203"}, {"cat": "cable", "icon": "🔌", "name": "Câble Kaku 3A Micro", "price": 85, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Kaku%203A%20Micro"}, {"cat": "cable", "icon": "🔌", "name": "Cable AirPods/Smart Watch Type C", "price": 40, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20AirPods%20TypeC"}, {"cat": "cable", "icon": "🔌", "name": "Cable AirPods/Smart Watch Micro", "price": 35, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20AirPods%20Micro"}, {"cat": "cable", "icon": "🔌", "name": "Cable Type C (PM)", "price": 48, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20Type%20C%20PM"}, {"cat": "cable", "icon": "🔌", "name": "Câble Type C / Type C 240W avec support", "price": 590, "phone": "213549438236", "watext": "أريد%20طلب:%20Cable%20240W"}, {"cat": "chargeur", "icon": "⚡", "name": "Chargeur Gfuz PGA01 Type C", "price": 210, "phone": "213549438236", "watext": "أريد%20طلب:%20Chargeur%20Gfuz%20Type%20C"}, {"cat": "chargeur", "icon": "⚡", "name": "Chargeur Gfuz PGA01 Micro", "price": 200, "phone": "213549438236", "watext": "أريد%20طلب:%20Chargeur%20Gfuz%20Micro"}, {"cat": "chargeur", "icon": "⚡", "name": "USB Oppo 33W Super Vooc", "price": 450, "phone": "213549438236", "watext": "أريد%20طلب:%20USB%20Oppo%2033W"}, {"cat": "chargeur", "icon": "⚡", "name": "Tête USB 45W Super Vooc", "price": 490, "phone": "213549438236", "watext": "أريد%20طلب:%20Tete%2045W"}, {"cat": "chargeur", "icon": "⚡", "name": "Tête USB 67W Super Vooc", "price": 600, "phone": "213549438236", "watext": "أريد%20طلب:%20Tete%2067W"}, {"cat": "chargeur", "icon": "⚡", "name": "Tête USB 100W Super Vooc", "price": 700, "phone": "213549438236", "watext": "أريد%20طلب:%20Tete%20100W"}, {"cat": "chargeur", "icon": "⚡", "name": "Tête Hoco 18W CS81A + Afficheur", "price": 560, "phone": "213549438236", "watext": "أريد%20طلب:%20Tete%20Hoco%2018W%20CS81A"}, {"cat": "chargeur", "icon": "⚡", "name": "Chargeur Hoco 18W Micro CS81A + Afficheur", "price": 590, "phone": "213549438236", "watext": "أريد%20طلب:%20Chargeur%20Hoco%2018W%20Micro"}, {"cat": "chargeur", "icon": "⚡", "name": "Chargeur Hoco 18W Type C CS81A + Afficheur", "price": 610, "phone": "213549438236", "watext": "أريد%20طلب:%20Chargeur%20Hoco%2018W%20TypeC"}, {"cat": "chargeur", "icon": "🚗", "name": "Tête Auto Remax", "price": 190, "phone": "213549438236", "watext": "أريد%20طلب:%20Tete%20Auto%20Remax"}, {"cat": "powerbank", "icon": "🔋", "name": "PB Hoco J101A - 20000 mAh 22.5W", "price": 2410, "phone": "213549438236", "watext": "أريد%20طلب:%20PB%20Hoco%20J101A%2020000"}, {"cat": "powerbank", "icon": "🔋", "name": "PB Hoco J101B - 30000 mAh 22.5W", "price": 3380, "phone": "213549438236", "watext": "أريد%20طلب:%20PB%20Hoco%20J101B%2030000"}, {"cat": "powerbank", "icon": "🔋", "name": "PB Hoco J146B - 30000 mAh", "price": 3680, "phone": "213549438236", "watext": "أريد%20طلب:%20PB%20Hoco%20J146B%2030000"}, {"cat": "powerbank", "icon": "🔋", "name": "PB Hoco J86 - 40000 mAh", "price": 4880, "phone": "213549438236", "watext": "أريد%20طلب:%20PB%20Hoco%20J86%2040000"}, {"cat": "powerbank", "icon": "🔋", "name": "PB Hoco J86A - 50000 mAh", "price": 5430, "phone": "213549438236", "watext": "أريد%20طلب:%20PB%20Hoco%20J86A%2050000"}, {"cat": "powerbank", "icon": "🔋", "name": "PB Hoco J86B - 60000 mAh", "price": 6430, "phone": "213549438236", "watext": "أريد%20طلب:%20PB%20Hoco%20J86B%2060000"}, {"cat": "powerbank", "icon": "🔋", "name": "PB Hoco J123C - 60000 mAh", "price": 6830, "phone": "213549438236", "watext": "أريد%20طلب:%20PB%20Hoco%20J123C%2060000"}, {"cat": "powerbank", "icon": "🔋", "name": "PB Hoco J152 - 80000 mAh", "price": 10530, "phone": "213549438236", "watext": "أريد%20طلب:%20PB%20Hoco%20J152%2080000"}, {"cat": "baffe", "icon": "🔊", "name": "Baffe Roda X509", "price": 1200, "phone": "213549438236", "watext": "أريد%20طلب:%20Baffe%20Roda%20X509"}, {"cat": "baffe", "icon": "🔊", "name": "Baffe Wireless S11", "price": 830, "phone": "213549438236", "watext": "أريد%20طلب:%20Baffe%20Wireless%20S11"}, {"cat": "baffe", "icon": "🔊", "name": "Baffle Mobiland BT32", "price": 900, "phone": "213549438236", "watext": "أريد%20طلب:%20Baffle%20Mobiland%20BT32"}, {"cat": "baffe", "icon": "🔊", "name": "Baffle Mobiland BT39 RGB", "price": 1500, "phone": "213549438236", "watext": "أريد%20طلب:%20Baffle%20Mobiland%20BT39%20RGB"}, {"cat": "baffe", "icon": "🔊", "name": "Baffle Mobiland BT24", "price": 1840, "phone": "213549438236", "watext": "أريد%20طلب:%20Baffle%20Mobiland%20BT24"}, {"cat": "baffe", "icon": "🔊", "name": "Baffle Mobiland BT21", "price": 950, "phone": "213549438236", "watext": "أريد%20طلب:%20Baffle%20Mobiland%20BT21"}, {"cat": "baffe", "icon": "🔊", "name": "Baffle Mobiland BT34", "price": 930, "phone": "213549438236", "watext": "أريد%20طلب:%20Baffle%20Mobiland%20BT34"}, {"cat": "support", "icon": "🏍️", "name": "Support Moto XY08", "price": 650, "phone": "213549438236", "watext": "أريد%20طلب:%20Support%20Moto%20XY08"}, {"cat": "support", "icon": "🏍️", "name": "Support Moto DC01", "price": 870, "phone": "213549438236", "watext": "أريد%20طلب:%20Support%20Moto%20DC01"}, {"cat": "support", "icon": "🏍️", "name": "Support Moto Hoco H85", "price": 670, "phone": "213549438236", "watext": "أريد%20طلب:%20Support%20Moto%20Hoco%20H85"}, {"cat": "support", "icon": "🚗", "name": "Support Auto Hoco H29", "price": 315, "phone": "213549438236", "watext": "أريد%20طلب:%20Support%20Auto%20Hoco%20H29"}, {"cat": "support", "icon": "🚗", "name": "Support Auto Hoco H30", "price": 330, "phone": "213549438236", "watext": "أريد%20طلب:%20Support%20Auto%20Hoco%20H30"}, {"cat": "support", "icon": "🚗", "name": "Support Auto Hoco H98", "price": 1220, "phone": "213549438236", "watext": "أريد%20طلب:%20Support%20Auto%20Hoco%20H98"}, {"cat": "support", "icon": "🚗", "name": "Support Auto Mobiland MG13", "price": 670, "phone": "213549438236", "watext": "أريد%20طلب:%20Support%20Auto%20Mobiland%20MG13"}, {"cat": "batterie", "icon": "🪫", "name": "Batterie Gevo G1/G2/G4s", "price": 410, "phone": "213549438236", "watext": "أريد%20طلب:%20Batterie%20Gevo%20G1G2G4s"}, {"cat": "batterie", "icon": "🪫", "name": "Batterie Gevo G3/G3+/G4", "price": 460, "phone": "213549438236", "watext": "أريد%20طلب:%20Batterie%20Gevo%20G3"}, {"cat": "batterie", "icon": "🪫", "name": "Batterie Nokia 4UL", "price": 360, "phone": "213549438236", "watext": "أريد%20طلب:%20Batterie%20Nokia%204UL"}, {"cat": "batterie", "icon": "🪫", "name": "Batterie Nokia BL4XL", "price": 360, "phone": "213549438236", "watext": "أريد%20طلب:%20Batterie%20Nokia%20BL4XL"}, {"cat": "batterie", "icon": "🪫", "name": "Batterie Nokia BL-L5H", "price": 360, "phone": "213549438236", "watext": "أريد%20طلب:%20Batterie%20Nokia%20BLL5H"}, {"cat": "batterie", "icon": "🪫", "name": "Batterie Nokia BL5C", "price": 110, "phone": "213549438236", "watext": "أريد%20طلب:%20Batterie%20Nokia%20BL5C"}, {"cat": "batterie", "icon": "🪫", "name": "Batterie Samsung E250", "price": 115, "phone": "213549438236", "watext": "أريد%20طلب:%20Batterie%20Samsung%20E250"}, {"cat": "batterie", "icon": "🪫", "name": "Batterie Infinix Smart 9 Original", "price": 1460, "phone": "213549438236", "watext": "أريد%20طلب:%20Batterie%20Infinix%20Smart%209"}, {"cat": "batterie", "icon": "🪫", "name": "Batterie Infinix Smart 8 Original", "price": 1360, "phone": "213549438236", "watext": "أريد%20طلب:%20Batterie%20Infinix%20Smart%208"}, {"cat": "modem", "icon": "📡", "name": "Modem WiFi 5G Afficheur", "price": 3490, "phone": "213549438236", "watext": "أريد%20طلب:%20Modem%20WiFi%205G"}, {"cat": "autre", "icon": "📺", "name": "Télécommande Géants 006", "price": 135, "phone": "213549438236", "watext": "أريد%20طلب:%20Telecommande%20Geants%20006"}, {"cat": "autre", "icon": "🎙️", "name": "Kit Hoco M101 Max (Micro)", "price": 280, "phone": "213549438236", "watext": "أريد%20طلب:%20Kit%20Hoco%20M101%20Max"}, {"cat": "autre", "icon": "🎙️", "name": "Kit Hoco M101 Max Type C", "price": 375, "phone": "213549438236", "watext": "أريد%20طلب:%20Kit%20Hoco%20M101%20Max%20TypeC"}, {"cat": "autre", "icon": "💡", "name": "Ring Light Hoco K29", "price": 1330, "phone": "213549438236", "watext": "أريد%20طلب:%20Ring%20Light%20Hoco%20K29"}];
+
+// LOGIN
+function doLogin() {
+  if (document.getElementById('loginInput').value === currentPass) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('admin').style.display = 'block';
+    initAdmin();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('loginInput').value = '';
+  }
+}
+document.getElementById('loginInput').focus();
+
+// INIT
+async function initAdmin() {
+  const snap = await db.collection('products').get();
+  if (snap.empty) {
+    showToast('📦 جاري رفع المنتجات...','');
+    for (let p of initProds) await db.collection('products').add(p);
+  }
+  db.collection('products').onSnapshot(snap => {
+    products = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderProds(); renderDash(); renderCats();
+    document.getElementById('syncBadge').textContent = '✅ متزامن';
+  });
+  db.collection('orders').onSnapshot(snap => {
+    orders = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderOrders(); renderDash();
+  });
+  const ds = await db.collection('delivery').get();
+  ds.forEach(d => { delivery[d.id] = d.data().price; });
+  renderDelivery();
+  const ss = await db.collection('settings').get();
+  ss.forEach(d => { settings = {...settings,...d.data()}; });
+  applySettings();
+}
+
+// NAV
+function showSec(n, el) {
+  document.querySelectorAll('.a-sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+  document.getElementById('sec-'+n).classList.add('active');
+  if(el) el.classList.add('active');
+  const t = {dashboard:'📊 لوحة المعلومات',products:'📦 المنتجات',categories:'🏷️ التصنيفات',orders:'🛒 الطلبيات',delivery:'🚚 التوصيل',settings:'⚙️ الإعدادات',backup:'💾 النسخ الاحتياطي'};
+  document.getElementById('ttl').textContent = t[n]||n;
+}
+
+// DASH
+function renderDash() {
+  const conf = orders.filter(o=>o.status==='confirmed');
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-num">${products.length}</div><div class="stat-label">المنتجات</div></div>
+    <div class="stat-card"><div class="stat-icon">🛒</div><div class="stat-num">${orders.length}</div><div class="stat-label">الطلبيات</div></div>
+    <div class="stat-card"><div class="stat-icon">🆕</div><div class="stat-num">${orders.filter(o=>o.status==='new').length}</div><div class="stat-label">جديدة</div></div>
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-num">${conf.reduce((s,o)=>s+(o.total||0),0).toLocaleString()}</div><div class="stat-label">إيرادات (دج)</div></div>`;
+  const r = document.getElementById('recentOrders');
+  if (!orders.length) { r.innerHTML='<p style="padding:20px;color:var(--muted);text-align:center">لا توجد طلبيات</p>'; return; }
+  r.innerHTML = '<table style="width:100%"><thead><tr><th>الزبون</th><th>الولاية</th><th>المجموع</th><th>الحالة</th></tr></thead><tbody>'+
+    [...orders].reverse().slice(0,5).map(o=>`<tr><td style="font-weight:700">${o.customerName||'-'}</td><td>${o.wilaya||'-'}</td><td style="color:var(--accent);font-weight:900">${(o.total||0).toLocaleString()} دج</td><td><span class="os s-${o.status||'new'}">${o.status==='confirmed'?'✅ مؤكد':o.status==='cancelled'?'❌ ملغي':'🆕 جديد'}</span></td></tr>`).join('')+'</tbody></table>';
+}
+
+// PRODUCTS
+function renderProds(search='') {
+  const cat = document.getElementById('catF')?.value||'all';
+  const f = (search||'').toLowerCase();
+  document.getElementById('prodsBody').innerHTML = products
+    .filter(p=>(cat==='all'||p.cat===cat)&&(!f||p.name.toLowerCase().includes(f)))
+    .map(p=>`<tr>
+      <td style="font-size:1.3rem">${p.icon||'📦'}</td>
+      <td style="font-weight:700">${p.name}</td>
+      <td><span class="cb">${cats[p.cat]||p.cat}</span></td>
+      <td><input type="number" class="ip" value="${p.price}" onchange="qPrice('${p.id}',this.value)"></td>
+      <td><div class="acts">
+        <button class="btn btn-sm btn-o" onclick="openEditProd('${p.id}')">✏️</button>
+        <button class="btn btn-sm btn-d" onclick="delProd('${p.id}','${p.name}')">🗑️</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+async function qPrice(id, val) {
+  document.getElementById('savInd').style.display='inline';
+  await db.collection('products').doc(id).set({price:parseInt(val)},{merge:true});
+  document.getElementById('savInd').style.display='none';
+  showToast('✅ تم حفظ السعر!','success');
+}
+
+function openAddProd() {
+  editProdId=null;
+  document.getElementById('pMoT').textContent='➕ إضافة منتج';
+  ['p-n','p-ic'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('p-pr').value='';
+  document.getElementById('p-ph').value='213549438236';
+  document.getElementById('pMo').classList.add('open');
+}
+
+function openEditProd(id) {
+  const p=products.find(x=>x.id===id); if(!p) return;
+  editProdId=id;
+  document.getElementById('pMoT').textContent='✏️ تعديل المنتج';
+  document.getElementById('p-n').value=p.name;
+  document.getElementById('p-pr').value=p.price;
+  document.getElementById('p-ic').value=p.icon||'';
+  document.getElementById('p-ca').value=p.cat;
+  document.getElementById('p-ph').value=p.phone||'213549438236';
+  document.getElementById('pMo').classList.add('open');
+}
+
+async function saveProd() {
+  const name=document.getElementById('p-n').value.trim();
+  const price=parseInt(document.getElementById('p-pr').value);
+  if(!name||isNaN(price)){showToast('❌ أدخل الاسم والسعر!','error');return;}
+  const data={name,price,icon:document.getElementById('p-ic').value.trim()||'📦',cat:document.getElementById('p-ca').value,phone:document.getElementById('p-ph').value,watext:encodeURIComponent('أريد طلب: '+name)};
+  if(editProdId) await db.collection('products').doc(editProdId).set(data,{merge:true});
+  else await db.collection('products').add(data);
+  showToast('✅ تم الحفظ!','success'); closeMo('pMo');
+}
+
+async function delProd(id,name) {
+  if(!confirm('حذف "'+name+'"؟')) return;
+  await db.collection('products').doc(id).delete();
+  showToast('🗑️ تم الحذف!','');
+}
+
+// CATS
+function renderCats() {
+  document.getElementById('catsBody').innerHTML = Object.entries(cats).map(([k,v])=>
+    `<tr><td style="font-family:monospace;font-weight:700">${k}</td><td>${v}</td><td>${products.filter(p=>p.cat===k).length} منتج</td><td><button class="btn btn-sm btn-o" onclick="editCat('${k}','${v}')">✏️</button></td></tr>`
+  ).join('');
+}
+function addCat() {
+  const k=prompt('مفتاح الصنف (إنجليزية):'); if(!k) return;
+  const v=prompt('اسم الصنف (عربية):'); if(!v) return;
+  cats[k]=v; renderCats(); showToast('✅ تم!','success');
+}
+function editCat(k,cur) { const v=prompt('الاسم الجديد:',cur); if(v) { cats[k]=v; renderCats(); } }
+
+// ORDERS
+function renderOrders() {
+  const list=document.getElementById('ordersList');
+  if(!orders.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">🛒 لا توجد طلبيات</div>';return;}
+  list.innerHTML=[...orders].reverse().map(o=>`
+    <div class="oc">
+      <div class="oh"><span class="oid">📋 ${o.id.slice(-6).toUpperCase()}</span><span class="os s-${o.status||'new'}">${o.status==='confirmed'?'✅ مؤكد':o.status==='cancelled'?'❌ ملغي':'🆕 جديد'}</span></div>
+      <div style="font-weight:700;margin-bottom:4px">${o.customerName||'-'} • ${o.wilaya||'-'}</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:10px">${o.productsText||'-'}</div>
+      <div class="of"><span class="ot">${(o.total||0).toLocaleString()} دج</span>
+        <div class="acts">
+          <button class="btn btn-sm btn-s" onclick="updOrder('${o.id}','confirmed')">✅</button>
+          <button class="btn btn-sm btn-d" onclick="updOrder('${o.id}','cancelled')">❌</button>
+          <button class="btn btn-sm btn-o" onclick="delOrder('${o.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openAddOrder() {
+  ['o-n','o-ph','o-w','o-p','o-t'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('oMo').classList.add('open');
+}
+async function saveOrder() {
+  await db.collection('orders').add({customerName:document.getElementById('o-n').value,phone:document.getElementById('o-ph').value,wilaya:document.getElementById('o-w').value,productsText:document.getElementById('o-p').value,total:parseInt(document.getElementById('o-t').value)||0,status:document.getElementById('o-s').value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  showToast('✅ تم!','success'); closeMo('oMo');
+}
+async function updOrder(id,status) {
+  await db.collection('orders').doc(id).set({status},{merge:true});
+  showToast(status==='confirmed'?'✅ مؤكد!':'❌ ملغي!',status==='confirmed'?'success':'error');
+}
+async function delOrder(id) {
+  if(!confirm('حذف الطلبية؟')) return;
+  await db.collection('orders').doc(id).delete(); showToast('🗑️ تم!','');
+}
+
+// DELIVERY
+function renderDelivery() {
+  document.getElementById('delGrid').innerHTML=wilayas.map((w,i)=>`
+    <div class="dc"><span style="font-size:.75rem;color:var(--muted);min-width:20px">${String(i+1).padStart(2,'0')}</span>
+    <span class="wn">${w}</span><input type="number" class="wp" data-w="${w}" value="${delivery[w]||400}"><span style="font-size:.75rem;color:var(--muted)">دج</span></div>`).join('');
+}
+async function saveDelivery() {
+  for(let inp of document.querySelectorAll('.wp')) {
+    delivery[inp.dataset.w]=parseInt(inp.value)||0;
+    await db.collection('delivery').doc(inp.dataset.w).set({price:delivery[inp.dataset.w]});
+  }
+  showToast('✅ تم حفظ أسعار التوصيل!','success');
+}
+
+// SETTINGS
+function applySettings() {
+  document.getElementById('s-name').value=settings.storeName||'';
+  document.getElementById('s-wa1').value=settings.wa1||'';
+  document.getElementById('s-wa2').value=settings.wa2||'';
+  document.getElementById('s-tg').value=settings.telegram||'';
+}
+async function saveSettings() {
+  settings={storeName:document.getElementById('s-name').value,wa1:document.getElementById('s-wa1').value,wa2:document.getElementById('s-wa2').value,telegram:document.getElementById('s-tg').value};
+  await db.collection('settings').doc('main').set(settings);
+  showToast('✅ تم حفظ الإعدادات!','success');
+}
+function changePass() {
+  const np=document.getElementById('np').value, cp=document.getElementById('cp').value;
+  if(!np){showToast('❌ أدخل كلمة السر!','error');return;}
+  if(np!==cp){showToast('❌ كلمتا السر غير متطابقتان!','error');return;}
+  currentPass=np; localStorage.setItem(PASS_KEY,np);
+  document.getElementById('np').value=''; document.getElementById('cp').value='';
+  showToast('✅ تم تغيير كلمة السر!','success');
+}
+
+// BACKUP
+function exportAll() { dlJ({products,orders,settings,delivery},'sk-backup.json'); }
+function exportProds() { dlJ(products,'sk-products.json'); }
+function dlJ(data,name) {
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download=name; a.click(); showToast('✅ تم التصدير!','success');
+}
+async function importData(inp) {
+  const data=JSON.parse(await inp.files[0].text());
+  if(data.products&&confirm(`استيراد ${data.products.length} منتج؟`)) {
+    for(let p of data.products) { const{id,...r}=p; if(id) await db.collection('products').doc(id).set(r); else await db.collection('products').add(r); }
+    showToast('✅ تم الاستيراد!','success');
+  }
+}
+
+// UTILS
+function closeMo(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+function showToast(msg,type) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>t.className='toast',3000);
+}
+</script>
+</body>
+</html>

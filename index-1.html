@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SK Phone Gros - اكسسوارات الهاتف</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#1a1a2e;--accent:#e94560;--light:#f8f9ff;--card:#fff;--text:#2d2d2d;--muted:#888;--border:#eee}
+body{font-family:'Cairo',sans-serif;background:var(--light);color:var(--text);direction:rtl}
+header{background:var(--primary);color:white;padding:0 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.3)}
+.header-inner{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;height:65px}
+.logo{font-size:1.4rem;font-weight:900;color:white}
+.logo span{color:var(--accent)}
+.whatsapp-btn{background:#25D366;color:white;padding:8px 16px;border-radius:25px;text-decoration:none;font-size:.85rem;font-weight:700}
+.hero{background:linear-gradient(135deg,var(--primary),#16213e,#0f3460);color:white;text-align:center;padding:50px 20px}
+.hero h1{font-size:2.2rem;font-weight:900;margin-bottom:10px}
+.hero h1 span{color:var(--accent)}
+.hero p{color:#aab;margin-bottom:25px}
+.hero-badges{display:flex;justify-content:center;gap:15px;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:8px 18px;border-radius:20px;font-size:.85rem;color:white}
+.filter-bar{background:white;border-bottom:1px solid var(--border);padding:12px 20px;overflow-x:auto;white-space:nowrap}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-inner{max-width:1200px;margin:auto;display:flex;gap:10px}
+.filter-btn{background:var(--light);border:2px solid var(--border);padding:7px 16px;border-radius:20px;font-family:'Cairo',sans-serif;font-size:.85rem;cursor:pointer;color:var(--text);font-weight:600;transition:all .2s;white-space:nowrap}
+.filter-btn:hover,.filter-btn.active{background:var(--primary);color:white;border-color:var(--primary)}
+.products-section{max-width:1200px;margin:30px auto;padding:0 20px}
+.section-title{font-size:1.3rem;font-weight:900;color:var(--primary);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:2px;background:linear-gradient(to left,transparent,var(--accent))}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.product-card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:transform .2s,box-shadow .2s;border:1px solid var(--border)}
+.product-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(0,0,0,.12)}
+.card-img{width:100%;height:170px;background:#f0f2f8;display:flex;align-items:center;justify-content:center;font-size:3rem}
+.card-body{padding:14px}
+.card-name{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.4}
+.card-price{font-size:1.2rem;font-weight:900;color:var(--accent);margin-bottom:8px}
+.qty-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.qty-label{font-size:.82rem;color:var(--muted);font-weight:600}
+.qty-input{width:60px;padding:6px 8px;border:2px solid var(--border);border-radius:8px;font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:700;text-align:center;outline:none}
+.qty-input:focus{border-color:var(--accent)}
+.order-btn{display:block;background:#25D366;color:white;text-align:center;padding:9px;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;border:none;width:100%;font-family:'Cairo',sans-serif}
+.order-btn:hover{background:#1da851}
+footer{background:var(--primary);color:#aab;text-align:center;padding:30px 20px;margin-top:50px}
+footer .fn{font-size:1.2rem;font-weight:900;color:white;margin-bottom:8px}
+footer .fn span{color:var(--accent)}
+footer p{font-size:.85rem;margin-bottom:5px}
+footer a{color:#25D366;text-decoration:none}
+@media(max-width:600px){
+  .hero h1{font-size:1.6rem}
+  .products-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .card-img{height:130px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo">SK <span>Phone</span> Gros</div>
+    <a href="https://wa.me/213549438236" class="whatsapp-btn" target="_blank">📱 اطلب الآن</a>
+  </div>
+</header>
+<div class="hero">
+  <h1>اكسسوارات الهاتف <span>بالجملة</span></h1>
+  <p>أفضل الأسعار • جودة مضمونة • توصيل مجاني</p>
+  <div class="hero-badges">
+    <div class="badge">✅ بيع بالضمان</div>
+    <div class="badge">🚚 توصيل مجاني</div>
+    <div class="badge">💬 واتساب / فايبر</div>
+  </div>
+</div>
+<div class="filter-bar">
+  <div class="filter-inner">
+    <button class="filter-btn active" onclick="filterCat('all',this)">الكل</button>
+    <button class="filter-btn" onclick="filterCat('casque',this)">سماعات</button>
+    <button class="filter-btn" onclick="filterCat('airpods',this)">إيربودز</button>
+    <button class="filter-btn" onclick="filterCat('cable',this)">كابلات</button>
+    <button class="filter-btn" onclick="filterCat('chargeur',this)">شارجور</button>
+    <button class="filter-btn" onclick="filterCat('powerbank',this)">باور بنك</button>
+    <button class="filter-btn" onclick="filterCat('baffe',this)">بلوتوث</button>
+    <button class="filter-btn" onclick="filterCat('support',this)">سيبورت</button>
+    <button class="filter-btn" onclick="filterCat('batterie',this)">باطري</button>
+    <button class="filter-btn" onclick="filterCat('modem',this)">مودام</button>
+    <button class="filter-btn" onclick="filterCat('autre',this)">أخرى</button>
+  </div>
+</div>
+<div class="products-section">
+  <div class="section-title">🛍️ جميع المنتجات</div>
+  <div id="grid" class="products-grid">
+    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">⏳ جاري تحميل المنتجات...</div>
+  </div>
+</div>
+<footer>
+  <div class="fn">SK <span>Phone</span> Gros</div>
+  <p>📱 واتساب: <a href="https://wa.me/213549438236">0549 438 236</a></p>
+  <p>📱 واتساب: <a href="https://wa.me/213661698785">0661 698 785</a></p>
+  <p style="margin-top:12px;font-size:.75rem">توصيل مجاني • بيع بالضمان • اكسسوارات الهاتف بالجملة</p>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyCPlH0VhpFJp4rOoc61ApwgW7GPCL5RRzE",
+    authDomain: "sk-phone-gros.firebaseapp.com",
+    projectId: "sk-phone-gros",
+    storageBucket: "sk-phone-gros.firebasestorage.app",
+    messagingSenderId: "129525741947",
+    appId: "1:129525741947:web:8485bf75891f64cfa7e5de"
+  });
+  const db = firebase.firestore();
+</script>
+<script>
+let allProducts = [], currentCat = 'all';
+
+db.collection('products').onSnapshot(snap => {
+  allProducts = snap.docs.map(d => ({id:d.id,...d.data()}));
+  renderGrid();
+});
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const list = currentCat === 'all' ? allProducts : allProducts.filter(p => p.cat === currentCat);
+  if (!list.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">لا توجد منتجات</div>'; return; }
+  grid.innerHTML = list.map((p,i) => `
+    <div class="product-card">
+      <div class="card-img">${p.icon||'📦'}</div>
+      <div class="card-body">
+        <div class="card-name">${p.name}</div>
+        <div class="card-price">${p.price} دج</div>
+        <div class="qty-row"><span class="qty-label">الكمية:</span><input type="number" class="qty-input" id="q${i}" value="1" min="1"></div>
+        <button class="order-btn" onclick="order('${p.phone||'213549438236'}','${p.name}',${p.price},'q${i}')">📲 اطلب عبر واتساب</button>
+      </div>
+    </div>`).join('');
+}
+
+function filterCat(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentCat = cat;
+  renderGrid();
+}
+
+function order(phone, name, price, qid) {
+  const qty = document.getElementById(qid)?.value || 1;
+  const msg = encodeURIComponent(`أريد طلب: ${name} - الكمية: ${qty} - السعر: ${price} دج - المجموع: ${price*qty} دج`);
+  window.open('https://wa.me/'+phone+'?text='+msg,'_blank');
+}
+</script>
+</body>
+</html>
