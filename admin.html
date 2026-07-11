@@ -463,10 +463,17 @@ async function saveProd() {
     }
   }
   
-  const data={name,price,icon:document.getElementById('p-ic').value.trim()||'📦',cat:document.getElementById('p-ca').value,phone:document.getElementById('p-ph').value,watext:encodeURIComponent('أريد طلب: '+name),image:imageUrl};
-  if(editProdId) await db.collection('products').doc(editProdId).set(data,{merge:true});
-  else await db.collection('products').add(data);
-  showToast('✅ تم الحفظ!','success'); closeMo('pMo'); resetImgPreview();
+  const data={name,price,icon:document.getElementById('p-ic').value.trim()||'📦',cat:document.getElementById('p-ca').value,phone:document.getElementById('p-ph').value,watext:encodeURIComponent('أريد طلب: '+name),image:imageUrl||''};
+  try {
+    if(editProdId) await db.collection('products').doc(editProdId).set(data,{merge:true});
+    else await db.collection('products').add(data);
+    showToast('✅ تم الحفظ!','success');
+    closeMo('pMo'); 
+    resetImgPreview();
+  } catch(err) {
+    showToast('❌ خطأ في الحفظ: ' + err.message, 'error');
+    console.error('Firebase save error:', err);
+  }
 }
 
 async function delProd(id,name) {
