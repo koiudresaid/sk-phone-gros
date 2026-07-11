@@ -448,17 +448,14 @@ async function saveProd() {
     showToast('⏳ جاري رفع الصورة...', '');
     try {
       imageUrl = await uploadToCloudinary(selectedImageFile);
-      console.log('Cloudinary URL:', imageUrl);
-      showToast('✅ رُفعت الصورة: ' + (imageUrl ? 'نجح' : 'فشل'), imageUrl ? 'success' : 'error');
+      uploadedImageUrl = imageUrl;
     } catch(e) {
-      console.error('Upload error:', e);
       showToast('❌ فشل رفع الصورة: ' + e.message, 'error');
       return;
     }
   } else {
-    // Keep existing image if editing
     const imgEl = document.getElementById('imgEl');
-    if (imgEl.style.display !== 'none' && imgEl.src.startsWith('http')) {
+    if (imgEl.style.display !== 'none' && imgEl.src && imgEl.src.startsWith('http')) {
       imageUrl = imgEl.src;
     }
   }
@@ -592,18 +589,19 @@ function toggleSidebar() {
 const CLOUD_NAME = 'zc9vwkdm';
 const UPLOAD_PRESET = 'sk_phone_upload';
 let selectedImageFile = null;
+let uploadedImageUrl = '';
 
 // IMAGE PREVIEW
 function previewImg(input) {
   const file = input.files[0];
   if (!file) return;
   selectedImageFile = file;
+  uploadedImageUrl = '';
   const reader = new FileReader();
   reader.onload = e => {
     document.getElementById('imgEl').src = e.target.result;
     document.getElementById('imgEl').style.display = 'block';
     document.getElementById('imgPlaceholder').style.display = 'none';
-    document.getElementById('imgPlaceholder').textContent = '✅ صورة جاهزة للرفع';
   };
   reader.readAsDataURL(file);
 }
@@ -613,11 +611,13 @@ async function uploadToCloudinary(file) {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', UPLOAD_PRESET);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+  const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', {
     method: 'POST',
     body: formData
   });
+  if (!res.ok) throw new Error('Upload failed: ' + res.status);
   const data = await res.json();
+  if (!data.secure_url) throw new Error('No URL returned');
   return data.secure_url;
 }
 
@@ -628,6 +628,7 @@ function resetImgPreview() {
   document.getElementById('imgPlaceholder').textContent = '📷 اضغط لاختيار صورة';
   document.getElementById('p-img').value = '';
   selectedImageFile = null;
+  uploadedImageUrl = '';
 }
 
 // UTILS
