@@ -448,8 +448,11 @@ async function saveProd() {
     showToast('⏳ جاري رفع الصورة...', '');
     try {
       imageUrl = await uploadToCloudinary(selectedImageFile);
+      console.log('Cloudinary URL:', imageUrl);
+      showToast('✅ رُفعت الصورة: ' + (imageUrl ? 'نجح' : 'فشل'), imageUrl ? 'success' : 'error');
     } catch(e) {
-      showToast('❌ فشل رفع الصورة!', 'error');
+      console.error('Upload error:', e);
+      showToast('❌ فشل رفع الصورة: ' + e.message, 'error');
       return;
     }
   } else {
