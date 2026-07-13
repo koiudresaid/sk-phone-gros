@@ -32,6 +32,15 @@ header{background:var(--primary);color:white;padding:0 20px;position:sticky;top:
 .product-card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:transform .2s,box-shadow .2s;border:1px solid var(--border)}
 .product-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(0,0,0,.12)}
 .card-img{width:100%;height:170px;background:#f0f2f8;display:flex;align-items:center;justify-content:center;font-size:3rem}
+.card-img.has-img{cursor:pointer}
+.lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999;align-items:center;justify-content:center}
+.lb.open{display:flex}
+.lb-img{max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px}
+.lb-close{position:absolute;top:16px;right:20px;color:#fff;font-size:1.8rem;cursor:pointer;line-height:1}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:2.5rem;cursor:pointer;padding:0 16px;user-select:none}
+.lb-prev{left:8px}
+.lb-next{right:8px}
+.lb-count{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;font-size:.85rem;background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px}
 .card-body{padding:14px}
 .card-name{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.4}
 .card-price{font-size:1.2rem;font-weight:900;color:var(--accent);margin-bottom:8px}
@@ -97,6 +106,14 @@ footer a{color:#25D366;text-decoration:none}
   <p style="margin-top:12px;font-size:.75rem">توصيل مجاني • بيع بالضمان • اكسسوارات الهاتف بالجملة</p>
 </footer>
 
+<div id="lb" class="lb" onclick="if(event.target===this)closeLb()">
+  <span class="lb-close" onclick="closeLb()">✕</span>
+  <span class="lb-nav lb-prev" onclick="lbMove(-1)">‹</span>
+  <img id="lbImg" class="lb-img">
+  <span class="lb-nav lb-next" onclick="lbMove(1)">›</span>
+  <div id="lbCount" class="lb-count"></div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
@@ -122,17 +139,52 @@ function renderGrid() {
   const grid = document.getElementById('grid');
   const list = currentCat === 'all' ? allProducts : allProducts.filter(p => p.cat === currentCat);
   if (!list.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">لا توجد منتجات</div>'; return; }
-  grid.innerHTML = list.map((p,i) => `
+  grid.innerHTML = list.map((p,i) => {
+    const imgs = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
+    const imgTag = imgs.length
+      ? `<img src="${imgs[0]}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">`
+      : (p.icon||'📦');
+    const clickAttr = imgs.length ? `onclick='openLb(${JSON.stringify(imgs)},0)'` : '';
+    return `
     <div class="product-card">
-      <div class="card-img">${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">` : (p.icon||'📦')}</div>
+      <div class="card-img${imgs.length?' has-img':''}" ${clickAttr}>${imgTag}</div>
       <div class="card-body">
         <div class="card-name">${p.name}</div>
         <div class="card-price">${p.price} دج</div>
         <div class="qty-row"><span class="qty-label">الكمية:</span><input type="number" class="qty-input" id="q${i}" value="1" min="1"></div>
         <button class="order-btn" onclick="order('${p.phone||'213549438236'}','${p.name}',${p.price},'q${i}')">📲 اطلب عبر واتساب</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
+
+// LIGHTBOX
+let lbImages = [];
+let lbIndex = 0;
+function openLb(imgs, startIdx) {
+  lbImages = imgs;
+  lbIndex = startIdx;
+  showLbImg();
+  document.getElementById('lb').classList.add('open');
+}
+function closeLb() { document.getElementById('lb').classList.remove('open'); }
+function lbMove(dir) {
+  lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+  showLbImg();
+}
+function showLbImg() {
+  document.getElementById('lbImg').src = lbImages[lbIndex];
+  const nav = lbImages.length > 1;
+  document.querySelector('.lb-prev').style.display = nav ? 'block' : 'none';
+  document.querySelector('.lb-next').style.display = nav ? 'block' : 'none';
+  document.getElementById('lbCount').textContent = nav ? (lbIndex+1)+' / '+lbImages.length : '';
+}
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lb').classList.contains('open')) return;
+  if (e.key === 'Escape') closeLb();
+  if (e.key === 'ArrowLeft') lbMove(-1);
+  if (e.key === 'ArrowRight') lbMove(1);
+});
 
 function filterCat(cat, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
