@@ -390,8 +390,13 @@ function renderProds(search='') {
   const f = (search||'').toLowerCase();
   document.getElementById('prodsBody').innerHTML = products
     .filter(p=>(cat==='all'||p.cat===cat)&&(!f||p.name.toLowerCase().includes(f)))
-    .map(p=>`<tr>
-      <td style="font-size:1.3rem">${p.icon||'📦'}</td>
+    .map(p=>{
+      const thumb = (p.images && p.images[0]) || p.image;
+      const imgCell = thumb
+        ? `<img src="${thumb}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;vertical-align:middle">`
+        : `<span style="font-size:1.3rem">${p.icon||'📦'}</span>`;
+      return `<tr>
+      <td>${imgCell}</td>
       <td style="font-weight:700">${p.name}</td>
       <td><span class="cb">${cats[p.cat]||p.cat}</span></td>
       <td><input type="number" class="ip" value="${p.price}" onchange="qPrice('${p.id}',this.value)"></td>
@@ -399,7 +404,7 @@ function renderProds(search='') {
         <button class="btn btn-sm btn-o" onclick="openEditProd('${p.id}')">✏️</button>
         <button class="btn btn-sm btn-d" onclick="delProd('${p.id}','${p.name}')">🗑️</button>
       </div></td>
-    </tr>`).join('');
+    </tr>`;}).join('');
 }
 
 async function qPrice(id, val) {
